@@ -12,7 +12,7 @@ import (
 func main() {
 
 	quotedWords := readWords("problem98.in")
-	words, _ := getWords(quotedWords)
+	words := getWords(quotedWords)
 	maxSquare := int64(0)
 
 	digits := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -22,15 +22,17 @@ func main() {
 		if len(v) == 1 {
 			continue
 		}
-		digitMaps := getAllCombinations(len(key), digits, 0)
-		//fmt.Println(digitMaps)
+		distinctCharacters := getDistinctCharacters(key)
+		lettersCount := len(distinctCharacters)
+
+		digitMaps := getAllCombinations(lettersCount, digits, 0)
 		for _, cmb := range digitMaps {
 			p := getPermutations(cmb)
-			//fmt.Println(p)
+
 			for _, prm := range p {
 				for i := 0; i < len(v); i++ {
-					nr := getNumber(prm, key, v[i])
-					if nr < 0 || int64(math.Sqrt(float64(nr)))*int64(math.Sqrt(float64(nr))) != nr {
+					nr := getNumber(prm, distinctCharacters, v[i])
+					if !isSquare(nr) {
 						continue
 					}
 
@@ -39,32 +41,41 @@ func main() {
 							continue
 						}
 
-						nr2 := getNumber(prm, key, v[j])
-
-						if nr2 != 2 && int64(math.Sqrt(float64(nr2)))*int64(math.Sqrt(float64(nr2))) == nr2 {
-							fmt.Println(nr, nr2)
+						nr2 := getNumber(prm, distinctCharacters, v[j])
+						if nr2 > 0 && int64(math.Sqrt(float64(nr2)))*int64(math.Sqrt(float64(nr2))) == nr2 {
 							if nr2 > maxSquare {
-								fmt.Println(v[i], v[j], nr, nr2)
-								maxWord = v[i] + " " + v[j]
 								maxSquare = nr2
 							}
 							if nr > maxSquare {
-								fmt.Println(v[i], v[j], nr, nr2)
-								maxWord = v[i] + " " + v[j]
-
 								maxSquare = nr
 							}
-							fmt.Println(key, cmb, prm, v[i], v[j], nr, nr2)
 
 						}
 					}
-
 				}
 			}
 		}
 	}
 	fmt.Println(maxSquare, maxWord)
 
+}
+
+func isSquare(n int64) bool {
+	return n > 0 && math.Pow(float64(int64(math.Sqrt(float64(n)))), 2) == float64(n)
+}
+
+func getDistinctCharacters(word string) string {
+	letters := make(map[string]bool)
+	s := ""
+	for _, l := range strings.Split(word, "") {
+		contains, _ := letters[l]
+		if !contains {
+			s += l
+			letters[l] = true
+		}
+	}
+
+	return s
 }
 
 func getNumber(cmb []int, k string, word string) int64 {
@@ -105,30 +116,6 @@ func getAllCombinations(length int, elements []int, start int) [][]int {
 	return n
 }
 
-// func getPermutations(digits []int) [][]int {
-// 	if len(digits) == 1 {
-// 		return [][]int{{digits[0]}}
-// 	}
-// 	t := [][]int{}
-// 	p := getPermutations(digits[1:])
-
-// 	for i := 0; i < len(p); i++ {
-// 		k := make([]int, len(p[i]))
-// 		copy(k, p[i])
-// 		t = append(t, append([]int{digits[0]}, k...))
-
-// 		for j := 0; j < len(p[i]); j++ {
-// 			m := make([]int, len(p[i]))
-// 			copy(m, p[i])
-// 			m = m[:j+1]
-// 			a := append(m, digits[0])
-// 			t = append(t, append(a, m[j+1:]...))
-// 		}
-// 	}
-
-// 	return t
-// }
-
 func getPermutations(arr []int) [][]int {
 	var helper func([]int, int)
 	res := [][]int{}
@@ -160,22 +147,16 @@ func getPermutations(arr []int) [][]int {
 	return res
 }
 
-func getWords(quotedWords []string) (map[string][]string, int) {
-	maxWordLength := 1
-
+func getWords(quotedWords []string) map[string][]string {
 	words := make(map[string][]string)
 
 	for _, word := range quotedWords {
-
-		if maxWordLength < len(word) {
-			maxWordLength = len(word)
-		}
 		w := strings.Replace(word, "\"", "", -1)
 		key := getWordKey(w)
 		words[key] = append(words[key], w)
 	}
 
-	return words, maxWordLength
+	return words
 }
 
 func getWordKey(w string) string {
