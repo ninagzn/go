@@ -6,12 +6,11 @@ const (
 	tenMln int64 = 10000000000
 )
 
-func main() {
-	fmt.Println(GetSolution97())
-}
+type Problem97 struct{}
 
-func GetSolution97() int64 {
-	return (28433*getLastTenDigitsOfTwoAtPow(7830457) + 1) % tenMln
+func (p *Problem97) GetSolution() string {
+	last10Digits := (28433*getLastTenDigitsOfTwoAtPow(7830457) + 1) % tenMln
+	return fmt.Sprint(last10Digits)
 }
 
 func getLastTenDigitsOfTwoAtPow(p int) int64 {

@@ -9,55 +9,69 @@ import (
 	"strings"
 )
 
-func main() {
+var (
+	digits = []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+)
 
-	quotedWords := readWords("problem98.in")
-	words := getWords(quotedWords)
+type Problem98 struct{}
+
+func (p *Problem98) GetSolution() string {
+	words := readWords("problem98.txt")
 	maxSquare := int64(0)
-
-	digits := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-	maxWord := ""
+	perms := make(map[int][][]int, 0)
 	for key, v := range words {
-
 		if len(v) == 1 {
 			continue
 		}
+
 		distinctCharacters := getDistinctCharacters(key)
 		lettersCount := len(distinctCharacters)
+		p := getPermutations(lettersCount, &perms)
 
-		digitMaps := getAllCombinations(lettersCount, digits, 0)
-		for _, cmb := range digitMaps {
-			p := getPermutations(cmb)
+		for _, prm := range p {
+			for i := 0; i < len(v); i++ {
+				nr1 := createNumber(prm, distinctCharacters, v[i])
+				if !isSquare(nr1) {
+					continue
+				}
 
-			for _, prm := range p {
-				for i := 0; i < len(v); i++ {
-					nr := getNumber(prm, distinctCharacters, v[i])
-					if !isSquare(nr) {
+				for j := i + 1; j < len(v); j++ {
+					if len(v[i]) != len(v[j]) {
 						continue
 					}
 
-					for j := i + 1; j < len(v); j++ {
-						if len(v[i]) != len(v[j]) {
-							continue
+					nr2 := createNumber(prm, distinctCharacters, v[j])
+					if nr2 > 0 && int64(math.Sqrt(float64(nr2)))*int64(math.Sqrt(float64(nr2))) == nr2 {
+						if nr2 > maxSquare {
+							maxSquare = nr2
+						}
+						if nr1 > maxSquare {
+							maxSquare = nr1
 						}
 
-						nr2 := getNumber(prm, distinctCharacters, v[j])
-						if nr2 > 0 && int64(math.Sqrt(float64(nr2)))*int64(math.Sqrt(float64(nr2))) == nr2 {
-							if nr2 > maxSquare {
-								maxSquare = nr2
-							}
-							if nr > maxSquare {
-								maxSquare = nr
-							}
-
-						}
 					}
 				}
 			}
 		}
 	}
-	fmt.Println(maxSquare, maxWord)
+	return fmt.Sprint(maxSquare)
+}
 
+func getPermutations(length int, perms *map[int][][]int) [][]int {
+	p, ok := (*perms)[length]
+	if !ok {
+		combs := getAllCombinations(length, digits, 0)
+		m := make([][]int, 0)
+		for _, cmb := range combs {
+			p := generatePermutations(cmb)
+			for _, i := range p {
+				m = append(m, i)
+			}
+		}
+		(*perms)[length] = m
+	}
+
+	return p
 }
 
 func isSquare(n int64) bool {
@@ -78,7 +92,7 @@ func getDistinctCharacters(word string) string {
 	return s
 }
 
-func getNumber(cmb []int, k string, word string) int64 {
+func createNumber(cmb []int, k string, word string) int64 {
 	letterMap := make(map[string]int)
 
 	for i, l := range strings.Split(k, "") {
@@ -116,7 +130,7 @@ func getAllCombinations(length int, elements []int, start int) [][]int {
 	return n
 }
 
-func getPermutations(arr []int) [][]int {
+func generatePermutations(arr []int) [][]int {
 	var helper func([]int, int)
 	res := [][]int{}
 
@@ -147,28 +161,23 @@ func getPermutations(arr []int) [][]int {
 	return res
 }
 
-func getWords(quotedWords []string) map[string][]string {
-	words := make(map[string][]string)
-
-	for _, word := range quotedWords {
-		w := strings.Replace(word, "\"", "", -1)
-		key := getWordKey(w)
-		words[key] = append(words[key], w)
-	}
-
-	return words
-}
-
 func getWordKey(w string) string {
 	s := strings.Split(w, "")
 	sort.Strings(s)
 	return strings.Join(s, "")
 }
 
-func readWords(filePath string) []string {
+func readWords(filePath string) map[string][]string {
 	content, _ := ioutil.ReadFile(filePath)
 	re := regexp.MustCompile("\"[a-zA-Z]+\"")
 	lines := re.FindAllString(string(content), -1)
+	words := make(map[string][]string)
 
-	return lines
+	for _, word := range lines {
+		w := strings.Replace(word, "\"", "", -1)
+		key := getWordKey(w)
+		words[key] = append(words[key], w)
+	}
+
+	return words
 }

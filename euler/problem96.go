@@ -7,12 +7,10 @@ import (
 	"strconv"
 )
 
-func main(){
-	fmt.Println(GetSolution96())
-}
+type Problem96 struct{}
 
-func GetSolution96() int {
-	input := readInput("problem96.in")
+func (p *Problem96) GetSolution() string {
+	input := readInput("problem96.txt")
 	sum := 0
 
 	for i := 0; i < len(input); i++ {
@@ -26,7 +24,7 @@ func GetSolution96() int {
 		printPairMatrix(x, y)
 	}
 
-	return sum
+	return fmt.Sprint(sum)
 }
 
 func printPairMatrix(x [9][9]int, y [9][9]int) {

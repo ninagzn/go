@@ -4,7 +4,9 @@ import (
 	"math"
 )
 
-func GetSolution12() int64 {
+type Problem12 struct{}
+
+func (p *Problem12) GetSolution() string {
 	n := int64(500)
 	sum := n * (n - 1) / 2
 	var primes []int64
@@ -15,7 +17,7 @@ func GetSolution12() int64 {
 			break
 		}
 	}
-	return sum
+	return string(sum)
 }
 
 func addNextPrime(primes *[]int64) {
