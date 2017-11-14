@@ -7,7 +7,7 @@ type EulerProblem interface {
 }
 
 func main() {
-	p := Problem98{}
+	p := Problem54{}
 
 	fmt.Println(p.GetSolution())
 }
