@@ -69,28 +69,28 @@ func getRankValue(h PokerHand) (int, int) {
 	}
 
 	if isFlush(h) {
-		return 6, highCard(h)
+		return 6, getHighCard(h)
 	}
 	ok, max = isStraight(h)
 	if ok {
 		return 5, max
 	}
-	ok, max = threeOfAKind(h)
+	ok, max = isThreeOfAKind(h)
 	if ok {
 		return 4, max
 	}
-	ok, max1, max2 = twoPairs(h)
+	ok, max1, max2 = isTwoPairs(h)
 	if ok {
 		return 3, max1 + max2
 	}
-	ok, max = onePair(h)
+	ok, max = isOnePair(h)
 	if ok {
 		return 2, max
 	}
-	return 1, highCard(h)
+	return 1, getHighCard(h)
 }
 
-func highCard(h PokerHand) int {
+func getHighCard(h PokerHand) int {
 	cardValues := make([]int, 14)
 	for _, card := range h.Cards {
 		cardValues[card.CardNumber]++
@@ -104,7 +104,7 @@ func highCard(h PokerHand) int {
 	return 0
 }
 
-func onePair(h PokerHand) (bool, int) {
+func isOnePair(h PokerHand) (bool, int) {
 	cardValues := make([]int, 14)
 	for _, card := range h.Cards {
 		cardValues[card.CardNumber]++
@@ -119,7 +119,7 @@ func onePair(h PokerHand) (bool, int) {
 	return false, -1
 }
 
-func threeOfAKind(h PokerHand) (bool, int) {
+func isThreeOfAKind(h PokerHand) (bool, int) {
 	cardValues := make([]int, 14)
 	for _, card := range h.Cards {
 		cardValues[card.CardNumber]++
@@ -134,7 +134,7 @@ func threeOfAKind(h PokerHand) (bool, int) {
 	return false, -1
 }
 
-func twoPairs(h PokerHand) (bool, int, int) {
+func isTwoPairs(h PokerHand) (bool, int, int) {
 	cardValues := make([]int, 14)
 	for _, card := range h.Cards {
 		cardValues[card.CardNumber]++
