@@ -233,7 +233,6 @@ func readPokerHands(filePath string) [][]PokerHand {
 	pokerHands := make([][]PokerHand, 0)
 	for _, line := range lines {
 		cards := strings.Split(line, " ")
-		fmt.Println(cards)
 		ph1 := buildPokerHand(cards[0:5])
 		ph2 := buildPokerHand(cards[5:])
 		pokerHands = append(pokerHands, []PokerHand{ph1, ph2})
@@ -250,6 +249,5 @@ func buildPokerHand(cards []string) PokerHand {
 			CardNumber: cardNumbers[symbols[0]],
 			CardType:   symbols[1]}
 	}
-	fmt.Println(ph)
 	return ph
 }
