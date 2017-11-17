@@ -3,5 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(myPow(2, 10))
+	sentence := "leetcode"
+	wordDict := []string{"leet", "code"}
+	fmt.Println(wordBreak(sentence, wordDict))
 }
